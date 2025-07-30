@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistem Pakar Klasifikasi Kendaraan</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <style>
+    #imageResult {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+    .hide {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+  <div class="card shadow">
+    <div class="card-header text-white text-center" style="background-color:SlateBlue;">
+      <h4 class="mb-0">SISTEM PAKAR KLASIFIKASI KENDARAAN</h4>
+    </div>
+    <div class="card-body">
+      <p id="questionText" class="h5 text-dark text-center mt-2">Klik tombol untuk memulai klasifikasi.</p>
+
+      <div id="btnGroup" class="text-center mt-4">
+        <button class="btn btn-success w-25 me-4" onclick="jawab('yes')"><b>YA</b></button>
+        <button class="btn btn-danger w-25" onclick="jawab('no')"><b>TIDAK</b></button>
+      </div>
+
+      <div id="resultBox" class="mt-4 font-weight-semibold"></div>
+
+      <div class="row mt-4">
+        <div class="col-md-6" id="answerList"></div>
+        <div class="col-md-6 text-danger text-center">
+          <img id="imageResult" class="hide" src="" alt="Hasil Klasifikasi">
+        </div>
+      </div>
+
+      <div id="restartButtons" class="hide mt-4 text-center">
+        <button class="btn btn-warning  btn-lg mr-2" onclick="ulang()">🔄 ULANG</button>
+		<a href="index.html" class="btn btn-success btn-lg">♻️ KEMBALI</a>
+      </div>
+	  
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  "Apakah kendaraan ini menggunakan mesin?",
+  "Apakah kendaraan ini memiliki dua roda?",
+  "Apakah kendaraan ini digunakan di rel?",
+  "Apakah kendaraan ini dikayuh dengan pedal?",
+  "Apakah kendaraan ini muat lebih dari 2 orang?"
+];
+
+let answers = [];
+let index = 0;
+
+window.onload = function() {
+  questionText.innerText = questions[index];
+};
+
+function jawab(pilihan) {
+  answers.push(pilihan);
+  index++;
+
+  if (index < questions.length) {
+    questionText.innerText = questions[index];
+  } else {
+    evaluate();
+  }
+}
+
+function evaluate() {
+  btnGroup.classList.add("hide");
+  restartButtons.classList.remove("hide");
+  questionText.innerText = "Selesai! Berikut hasilnya:";
+  let result = "";
+  let imageFile = "";
+
+  if (answers[0] === "yes" && answers[1] === "yes") {
+    result = "MOTOR";
+    imageFile = "motor.png";
+  } else if (answers[0] === "yes" && answers[2] === "yes") {
+    result = "KERETA";
+    imageFile = "train.png";
+  } else if (answers[0] === "yes" && answers[4] === "yes") {
+    result = "MOBIL";
+    imageFile = "car.png";
+  } else if (answers[0] === "no" && answers[3] === "yes") {
+    result = "SEPEDA";
+    imageFile = "bike.png";
+  } else {
+    result = "KENDARAAN TIDAK DIKENAL";
+    imageFile = "unknown.png";
+  }
+
+  resultBox.innerHTML = "Klasifikasi: <i>" + result + "</i>";
+  if (imageFile) {
+    imageResult.src = "image/" + imageFile;
+    imageResult.classList.remove("hide");
+  } else {
+    imageResult.classList.add("hide");
+  }
+
+  let html = "<ul class='list-group'>";
+  for (let i = 0; i < questions.length; i++) {
+    html += `<li class='list-group-item d-flex justify-content-between'>
+               <span>${questions[i]}</span>
+               <span><strong>${answers[i] === "yes" ? "Ya" : "Tidak"}</strong></span>
+             </li>`;
+  }
+  html += "</ul>";
+  answerList.innerHTML = html;
+}
+
+function ulang() {
+  answers = [];
+  index = 0;
+  questionText.innerText = questions[index];
+  btnGroup.classList.remove("hide");
+  restartButtons.classList.add("hide");
+  resultBox.innerHTML = "";
+  answerList.innerHTML = "";
+  imageResult.classList.add("hide");
+}
+
+function reset() {
+  location.reload();
+}
+</script>
+</body>
+</html>
